@@ -1,0 +1,31 @@
+.sidebar {
+    width: 240px;
+    background: #343a40;
+    color: #fff;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: #cfd8dc;
+    padding: 12px 16px;
+}
+
+.sidebar .nav-link:hover {
+    background: #8db6f4;
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidebar .active-sidebar {
+    background: #afc3e2;
+    color: #fff;
+}
+
+@media(max-width:767px) {
+    .sidebar {
+        position: fixed;
+        z-index: 1000;
+        left: -100%;
+        transition: left .25s;
+    }
+}
