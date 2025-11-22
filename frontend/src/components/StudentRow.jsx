@@ -1,7 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function StudentRow({ student, onDelete }){
+export default function StudentRow({ student, onDelete }) {
+  const navigate = useNavigate();
+
   return (
     <tr>
       <td>{student.roll}</td>
@@ -9,13 +11,19 @@ export default function StudentRow({ student, onDelete }){
       <td>{student.classSec}</td>
       <td>{student.email}</td>
       <td>
-        <Link to={`/students/edit/${student.id}`} className="btn btn-outline-warning btn-sm btn-icon me-1">
-          <i className="bi bi-pencil"></i>
-        </Link>
-        <button className="btn btn-outline-danger btn-sm btn-icon" onClick={() => onDelete(student.id)}>
-          <i className="bi bi-trash"></i>
+        <button
+          className="btn btn-sm btn-primary me-2"
+          onClick={() => navigate(`/students/edit/${student._id}`)} // _id is required
+        >
+          Edit
+        </button>
+        <button
+          className="btn btn-sm btn-danger"
+          onClick={() => onDelete(student._id)} // _id is required
+        >
+          Delete
         </button>
       </td>
     </tr>
-  )
+  );
 }

@@ -6,6 +6,8 @@ import EditStudent from "./pages/students/EditStudent";
 import TeachersList from "./pages/teachers/TeachersList";
 import MarkAttendance from "./pages/attendance/MarkAttendance";
 import AttendanceReport from "./pages/reports/AttendanceReport";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
 
 function App() {
   return (
@@ -21,6 +23,9 @@ function App() {
 
         <Route path="/attendance" element={<MarkAttendance />} />
         <Route path="/reports" element={<AttendanceReport />} />
+        
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
       </Routes>
     </BrowserRouter>

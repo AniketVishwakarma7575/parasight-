@@ -1,70 +1,162 @@
-import React, { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar';
-import TopNavbar from '../../components/TopNavbar';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import Sidebar from "../../components/Sidebar";
+import TopNavbar from "../../components/TopNavbar";
+import { Link } from "react-router-dom";
+import api from '../../api/axiosConfig'; 
 
-const STUDENT_KEY = 'attendance_students_v1';
-const ATTEND_KEY = 'attendance_records_v1';
+// Format date → YYYY-MM-DD
+const fmt = (d) => new Date(d).toISOString().slice(0, 10);
 
-const fmt = d => new Date(d).toISOString().slice(0,10);
-
-export default function AttendanceReport(){
+export default function AttendanceReport() {
   const [students, setStudents] = useState([]);
   const [records, setRecords] = useState({});
   const [date, setDate] = useState(fmt(new Date()));
+  const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
-    setStudents(JSON.parse(localStorage.getItem(STUDENT_KEY) || '[]'));
-    setRecords(JSON.parse(localStorage.getItem(ATTEND_KEY) || '{}'));
-  },[]);
+  // 📌 Load Students (from backend)
+  const loadStudents = async () => {
+    try {
+      const res = await api.get("/students"); 
+      setStudents(res.data.students || []);
+    } catch (err) {
+      console.error("Error fetching students:", err);
+    }
+  };
 
-  useEffect(()=>{
-    setRecords(JSON.parse(localStorage.getItem(ATTEND_KEY) || '{}'));
-  },[date]);
+  // 📌 Load attendance for selected date
+  const loadAttendanceForDate = async (currentDate) => {
+    try {
+      const res = await api.get(`/attendance/${currentDate}`); 
+      setRecords(res.data.records || {});
+    } catch (err) {
+      console.error("Error loading attendance:", err);
+      setRecords({}); 
+    }
+  };
 
-  const dayRec = records[date] || {};
+  // Initial load
+  useEffect(() => {
+    const fetchAll = async () => {
+      await loadStudents();
+      await loadAttendanceForDate(date);
+      setLoading(false);
+    };
+    fetchAll();
+  }, []);
 
-  const present = students.filter(s => dayRec[s.id] === 'present');
-  const absent  = students.filter(s => dayRec[s.id] === 'absent' || !dayRec[s.id]);
+  // Reload attendance when date changes
+  useEffect(() => {
+    if (!loading && date) {
+      loadAttendanceForDate(date);
+    }
+  }, [date, loading]);
+
+  if (loading) return <p className="p-3">Loading...</p>;
+
+  const dayRec = records || {};
+
+  // Present
+  const present = students.filter((s) => dayRec[s._id] === "present");
+
+  // Absent = either marked absent OR missing entry
+  const absent = students.filter(
+    (s) => dayRec[s._id] === "absent" || !dayRec[s._id]
+  );
 
   return (
     <div className="app-container">
       <Sidebar />
       <div className="main-area">
         <TopNavbar />
+
         <div className="content">
           <div className="d-flex justify-content-between align-items-center">
             <h4>Attendance Reports</h4>
+
             <div>
-              <Link className="btn btn-primary btn-sm me-2" to="/attendance">Mark Today</Link>
-              <Link className="btn btn-outline-secondary btn-sm" to="/students">Manage Students</Link>
+              <Link
+                className="btn btn-primary btn-sm me-2"
+                to="/attendance"
+              >
+                Mark Today
+              </Link>
+              <Link
+                className="btn btn-outline-secondary btn-sm"
+                to="/students"
+              >
+                Manage Students
+              </Link>
             </div>
           </div>
 
           <div className="card card-custom mt-3 p-3">
-            <div className="d-flex gap-2 align-items-center mb-3">
-              <label className="mb-0">Select Date</label>
-              <input type="date" className="form-control w-auto" value={date} onChange={e=>setDate(e.target.value)} />
-              <Link to={`/attendance?date=${date}`} className="btn btn-sm btn-outline-primary">Edit Attendance</Link>
+            <div className="d-flex gap-2 align-items-center mb-3 flex-wrap">
+              <label className="mb-0 fw-semibold">Select Date</label>
+
+              <input
+                type="date"
+                className="form-control w-auto"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+
+              <Link
+                to={`/attendance?date=${date}`} 
+                className="btn btn-sm btn-outline-primary"
+              >
+                Edit Attendance
+              </Link>
             </div>
 
             <div className="row">
-              <div className="col-md-6">
-                <h6>Present ({present.length})</h6>
+              {/* Present List */}
+              <div className="col-md-6 mb-3">
+                <h6>
+                  Present ({present.length})
+                </h6>
+
                 <ul className="list-group">
-                  {present.map(p => <li key={p.id} className="list-group-item">{p.roll} — {p.name} <small className="text-muted">({p.classSec})</small></li>)}
-                  {present.length===0 && <li className="list-group-item text-muted">No one present</li>}
+                  {present.length > 0 ? (
+                    present.map((p) => (
+                      <li key={p._id} className="list-group-item">
+                        {p.roll} — {p.name}{" "}
+                        <small className="text-muted">
+                          ({p.classSec})
+                        </small>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="list-group-item text-muted">
+                      No one present
+                    </li>
+                  )}
                 </ul>
               </div>
-              <div className="col-md-6">
-                <h6>Absent ({absent.length})</h6>
+
+              {/* Absent List */}
+              <div className="col-md-6 mb-3">
+                <h6>
+                  Absent ({absent.length})
+                </h6>
+
                 <ul className="list-group">
-                  {absent.map(p => <li key={p.id} className="list-group-item">{p.roll} — {p.name} <small className="text-muted">({p.classSec})</small></li>)}
-                  {absent.length===0 && <li className="list-group-item text-muted">No one absent</li>}
+                  {absent.length > 0 ? (
+                    absent.map((p) => (
+                      <li key={p._id} className="list-group-item">
+                        {p.roll} — {p.name}{" "}
+                        <small className="text-muted">
+                          ({p.classSec})
+                        </small>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="list-group-item text-muted">
+                      No one absent
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
-
           </div>
         </div>
       </div>
