@@ -1,3 +1,4 @@
+/* Desktop Sidebar */
 .sidebar {
     width: 240px;
     background: #343a40;
@@ -21,11 +22,53 @@
     color: #fff;
 }
 
-@media(max-width:767px) {
+/* Hide sidebar on mobile */
+@media(max-width: 767px) {
     .sidebar {
-        position: fixed;
-        z-index: 1000;
-        left: -100%;
-        transition: left .25s;
+        display: none;
+    }
+}
+
+/* ---------------------------
+   Mobile Bottom Navigation Bar
+---------------------------- */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #343a40;
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 2000;
+    border-top: 1px solid #555;
+}
+
+.nav-item-mobile {
+    color: #cfd8dc;
+    text-align: center;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.nav-item-mobile i {
+    font-size: 20px;
+    display: block;
+}
+
+.nav-item-mobile.active {
+    color: #ffffff;
+}
+
+.nav-item-mobile:hover {
+    color: #8db6f4;
+}
+
+/* Hide mobile nav on desktop */
+@media(min-width: 768px) {
+    .mobile-bottom-nav {
+        display: none;
     }
 }

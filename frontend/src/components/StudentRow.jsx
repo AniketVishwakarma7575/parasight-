@@ -13,13 +13,13 @@ export default function StudentRow({ student, onDelete }) {
       <td>
         <button
           className="btn btn-sm btn-primary me-2"
-          onClick={() => navigate(`/students/edit/${student._id}`)} // _id is required
+          onClick={() => navigate(`/students/edit/${student._id}`)} 
         >
           Edit
         </button>
         <button
           className="btn btn-sm btn-danger"
-          onClick={() => onDelete(student._id)} // _id is required
+          onClick={() => onDelete(student._id)} 
         >
           Delete
         </button>

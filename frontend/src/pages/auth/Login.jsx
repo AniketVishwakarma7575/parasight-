@@ -13,8 +13,8 @@ export default function Login() {
 
     try {
       const res = await api.post("/admin/login", { email, password });
-      localStorage.setItem("token", res.data.token); // save JWT
-      navigate("/add-student"); // redirect
+      localStorage.setItem("adminToken", res.data.token);
+      navigate("/"); // redirect
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
