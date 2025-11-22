@@ -1,39 +1,24 @@
-const router = require('express').Router();
-const Student = require('../models/Student');
-const auth = require('../middleware/auth');
+const express = require('express');
+const { body } = require('express-validator');
+const studentsController = require('../controllers/studentsController');
+const jwtAuth = require('../middleware/jwtAuth');
 
-// Create
-router.post('/', auth, async (req, res) => {
-  const s = new Student(req.body);
-  await s.save();
-  res.json(s);
-});
+const router = express.Router();
 
-// List (with simple search / pagination)
-router.get('/', auth, async (req,res) => {
-  const { q, page=1, limit=20 } = req.query;
-  const filter = q ? { name: new RegExp(q, 'i') } : {};
-  const students = await Student.find(filter).skip((page-1)*limit).limit(parseInt(limit));
-  const total = await Student.countDocuments(filter);
-  res.json({ data: students, total });
-});
+// Public GET
+router.get('/', studentsController.getAll);
+router.get('/:id', studentsController.getById);
 
-// Get
-router.get('/:id', auth, async (req,res)=> {
-  const s = await Student.findById(req.params.id);
-  res.json(s);
-});
+// Protected routes (admin only)
+router.post('/',
+  jwtAuth,
+  body('roll').notEmpty().withMessage('roll required'),
+  body('name').notEmpty().withMessage('name required'),
+  body('classSec').notEmpty().withMessage('classSec required'),
+  studentsController.create
+);
 
-// Update
-router.put('/:id', auth, async (req,res)=>{
-  const s = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(s);
-});
-
-// Delete
-router.delete('/:id', auth, async (req,res)=>{
-  await Student.findByIdAndDelete(req.params.id);
-  res.json({ ok: true });
-});
+router.put('/:id', jwtAuth, studentsController.update);
+router.delete('/:id', jwtAuth, studentsController.remove);
 
 module.exports = router;
