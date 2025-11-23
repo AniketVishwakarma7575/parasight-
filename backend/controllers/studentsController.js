@@ -10,20 +10,22 @@ exports.getAll = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// Get student by ID
+// Geting student by id
 exports.getById = async (req, res, next) => {
     try {
         const s = await Student.findById(req.params.id);
-        if (!s) return res.status(404).json({ message: 'Student not found' });
+        if (!s) 
+            return res.status(404).json({ message: 'Student not found' });
         res.json(s);
     } catch (err) { next(err); }
 };
 
-// Create student
+// create student
 exports.create = async (req, res, next) => {
     try {
         const errors = validationResult(req);
-        if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        if (!errors.isEmpty()) 
+            return res.status(422).json({ errors: errors.array() });
 
         const { roll, name, classSec, email } = req.body;
         const created = await Student.create({ roll, name, classSec, email });
@@ -38,7 +40,8 @@ exports.update = async (req, res, next) => {
     try {
         const { roll, name, classSec, email } = req.body;
         const s = await Student.findById(req.params.id);
-        if (!s) return res.status(404).json({ message: 'Student not found' });
+        if (!s) 
+            return res.status(404).json({ message: 'Student not found' });
 
         s.roll = roll ?? s.roll;
         s.name = name ?? s.name;
@@ -54,7 +57,8 @@ exports.update = async (req, res, next) => {
 exports.remove = async (req, res, next) => {
     try {
         const s = await Student.findByIdAndDelete(req.params.id);
-        if (!s) return res.status(404).json({ message: 'Student not found' });
+        if (!s) 
+            return res.status(404).json({ message: 'Student not found' });
         res.json({ message: 'Deleted', studentId: s._id });
     } catch (err) { next(err); }
 };

@@ -18,18 +18,15 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
-// API base
 app.use('/api/students', studentsRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/teachers', teachersRoutes);
 
-// Before other protected routes
+// protected routes
 app.use('/api/admin', adminAuthRoutes);
-
-// health
 app.get('/api/health', (req, res) => res.json({ ok: true, timestamp: new Date() }));
-
-// error handler (must be last)
 app.use(errorHandler);
+
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

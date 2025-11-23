@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', studentsController.getAll);
 router.get('/:id', studentsController.getById);
 
-// Protected routes (admin only)
+// Protected - only logged-in admins
 router.post('/',
   jwtAuth,
   body('roll').notEmpty().withMessage('roll required'),

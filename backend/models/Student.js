@@ -15,29 +15,14 @@ const StudentSchema = new mongoose.Schema({
     classSec: {
         type: String, 
         required: true, 
-        trim: true,
-        required: true,  
+        trim: true
     },
     email: { 
         type: String, 
         trim: true, 
-        unique: true ,
+        unique: true,
         required: true, 
     }
-        
 }, { timestamps: true });
 
 module.exports = mongoose.model('Student', StudentSchema);
-
-
-
-
-
-
-
-
-
-
-
-
-

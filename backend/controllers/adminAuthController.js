@@ -2,14 +2,23 @@ const Admin = require("../models/Admin");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 
+
+//  karne ko iss type mai bhi kar sakta tha lekin product purpose  
+
+
+
+
+
 exports.register = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(422).json({ errors: errors.array() });
+    if (!errors.isEmpty()) 
+      return res.status(422).json({ errors: errors.array() });
 
     const { name, email, password } = req.body;
     const exists = await Admin.findOne({ email });
-    if (exists) return res.status(400).json({ message: "Email already registered" });
+    if (exists) 
+      return res.status(400).json({ message: "Email already registered" });
 
     const admin = await Admin.create({ name, email, password });
     res.status(201).json({ message: "Admin registered", admin: { id: admin._id, name, email } });
