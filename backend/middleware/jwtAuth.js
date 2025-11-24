@@ -5,7 +5,7 @@ module.exports = async (req, res, next) => {
   const authHeader = req.header("Authorization");
   if (!authHeader) return res.status(401).json({ message: "Missing token" });
 
-  const token = authHeader.replace("Bearer ", "");
+  const token = authHeader.replace("Bearer", "");
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secretkey");
     const admin = await Admin.findById(decoded.id);
